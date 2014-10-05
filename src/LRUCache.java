@@ -27,15 +27,8 @@ public class LRUCache {
         DoubleLinkListNode node = keyMap.get(key);
         if (node == null) return -1;
         else {
-            if (node == currentListTail) currentListTail = node.head;
-            node.head.tail = node.tail;
-            if (node.tail != null) node.tail.head = node.head;
-
-            node.head = LIST_HEAD;
-            node.tail = LIST_HEAD.tail;
-            if (LIST_HEAD.tail != null) LIST_HEAD.tail.head = node;
-            LIST_HEAD.tail = node;
-            if (currentListTail == LIST_HEAD) currentListTail = node;
+            //move this node to front if it is accessed
+            moveNodeBehindHead(node);
             return node.val;
         }
 
@@ -45,22 +38,17 @@ public class LRUCache {
 
         if (keyMap.containsKey(key)) {
             DoubleLinkListNode node = keyMap.get(key);
-            if (node == currentListTail) currentListTail = node.head;
-            node.head.tail = node.tail;
-            if (node.tail != null) node.tail.head = node.head;
-
-            node.head = LIST_HEAD;
-            node.tail = LIST_HEAD.tail;
             node.val = value;
-            if (LIST_HEAD.tail != null) LIST_HEAD.tail.head = node;
-            LIST_HEAD.tail = node;
-            if (currentListTail == LIST_HEAD) currentListTail = node;
+            //move this node to front if it is accessed
+            moveNodeBehindHead(node);
             return;
         }
 
         if (actualSize == capacity) {
+            //remove the node in the tail if reach the capacity
             int keyToBeDelete = currentListTail.key;
             currentListTail = currentListTail.head;
+            currentListTail.tail = null;
             keyMap.remove(keyToBeDelete);
             actualSize--;
         }
@@ -71,6 +59,19 @@ public class LRUCache {
         if (currentListTail == LIST_HEAD) currentListTail = newNode;
         keyMap.put(key, newNode);
         actualSize += 1;
+    }
+
+    private void moveNodeBehindHead(DoubleLinkListNode nodeToMove) {
+        if (nodeToMove == currentListTail) currentListTail = nodeToMove.head;
+        nodeToMove.head.tail = nodeToMove.tail;
+        if (nodeToMove.tail != null) nodeToMove.tail.head = nodeToMove.head;
+
+        nodeToMove.head = LIST_HEAD;
+        nodeToMove.tail = LIST_HEAD.tail;
+
+        if (LIST_HEAD.tail != null) LIST_HEAD.tail.head = nodeToMove;
+        LIST_HEAD.tail = nodeToMove;
+        if (currentListTail == LIST_HEAD) currentListTail = nodeToMove;
     }
 
 
