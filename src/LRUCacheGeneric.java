@@ -48,6 +48,7 @@ public class LRUCacheGeneric<K, V> {
             //remove the node in the tail if reach the capacity
             K keyToBeDelete = currentListTail.key;
             currentListTail = currentListTail.head;
+            //set the reference to null. so should be ready for GC.
             currentListTail.tail = null;
             keyMap.remove(keyToBeDelete);
             actualSize--;
