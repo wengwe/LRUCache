@@ -47,46 +47,48 @@ public class LRUCache {
         if (actualSize == capacity) {
             //remove the node in the tail if reach the capacity
             int keyToBeDelete = currentListTail.key;
-            currentListTail = currentListTail.head;
-            currentListTail.tail = null;
+            currentListTail = currentListTail.prev;
+            currentListTail.next = null;
             keyMap.remove(keyToBeDelete);
             actualSize--;
         }
 
-        DoubleLinkListNode newNode = new DoubleLinkListNode(LIST_HEAD, LIST_HEAD.tail, key, value);
-        if (LIST_HEAD.tail != null) LIST_HEAD.tail.head = newNode;
-        LIST_HEAD.tail = newNode;
+        DoubleLinkListNode newNode = new DoubleLinkListNode(LIST_HEAD, LIST_HEAD.next, key, value);
+        if (LIST_HEAD.next != null) LIST_HEAD.next.prev = newNode;
+        LIST_HEAD.next = newNode;
         if (currentListTail == LIST_HEAD) currentListTail = newNode;
         keyMap.put(key, newNode);
         actualSize += 1;
     }
 
     private void moveNodeBehindHead(DoubleLinkListNode nodeToMove) {
-        if (nodeToMove == currentListTail) currentListTail = nodeToMove.head;
-        nodeToMove.head.tail = nodeToMove.tail;
-        if (nodeToMove.tail != null) nodeToMove.tail.head = nodeToMove.head;
+        if (nodeToMove == currentListTail) currentListTail = nodeToMove.prev;
+        nodeToMove.prev.next = nodeToMove.next;
+        if (nodeToMove.next != null) nodeToMove.next.prev = nodeToMove.prev;
 
-        nodeToMove.head = LIST_HEAD;
-        nodeToMove.tail = LIST_HEAD.tail;
+        nodeToMove.prev = LIST_HEAD;
+        nodeToMove.next = LIST_HEAD.next;
 
-        if (LIST_HEAD.tail != null) LIST_HEAD.tail.head = nodeToMove;
-        LIST_HEAD.tail = nodeToMove;
+        if (LIST_HEAD.next != null) LIST_HEAD.next.prev = nodeToMove;
+        LIST_HEAD.next = nodeToMove;
         if (currentListTail == LIST_HEAD) currentListTail = nodeToMove;
     }
 
 
     private class DoubleLinkListNode {
-        DoubleLinkListNode head;
-        DoubleLinkListNode tail;
+        DoubleLinkListNode prev;
+        DoubleLinkListNode next;
         int key;
         int val;
 
-        private DoubleLinkListNode(DoubleLinkListNode head, DoubleLinkListNode tail, int key, int val) {
-            this.head = head;
-            this.tail = tail;
+        private DoubleLinkListNode(DoubleLinkListNode prev, DoubleLinkListNode next, int key, int val) {
+            this.prev = prev;
+            this.next = next;
             this.key = key;
             this.val = val;
         }
+
+
     }
 
 }
