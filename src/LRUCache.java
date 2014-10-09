@@ -65,10 +65,10 @@ public class LRUCache {
         StringBuffer sb = new StringBuffer();
         DoubleLinkListNode node = LIST_HEAD.next;
         while (node != null) {
-            sb.append(node.key);
+            sb.append(node.key + " ");
             node = node.next;
         }
-        return sb.toString();
+        return sb.toString().trim();
     }
 
 

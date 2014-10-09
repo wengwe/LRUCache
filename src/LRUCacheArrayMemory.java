@@ -79,10 +79,10 @@ public class LRUCacheArrayMemory {
         int nextIndex = nodeArray[LIST_HEAD_NODE_INDEX].nextNodeIndex;
         while (nextIndex != -1) {
             DoubleLinkListNode node = nodeArray[nextIndex];
-            sb.append(node.key);
+            sb.append(node.key + " ");
             nextIndex = node.nextNodeIndex;
         }
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     private void removeNodeAt(int index) {
