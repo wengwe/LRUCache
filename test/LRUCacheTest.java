@@ -91,5 +91,31 @@ public class LRUCacheTest {
         val = lruCache.get(5);
         Assert.assertEquals("532", lruCache.getKeyByOrderAsStr());
         Assert.assertEquals(5, val);
+
+        val = lruCache.get(3);
+        Assert.assertEquals("352", lruCache.getKeyByOrderAsStr());
+        Assert.assertEquals(3, val);
+
+        val = lruCache.get(2);
+        Assert.assertEquals("235", lruCache.getKeyByOrderAsStr());
+        Assert.assertEquals(2, val);
+
+        val = lruCache.get(5);
+        Assert.assertEquals("523", lruCache.getKeyByOrderAsStr());
+        Assert.assertEquals(5, val);
+
+        lruCache.set(3, 7);
+        Assert.assertEquals("352", lruCache.getKeyByOrderAsStr());
+
+        val = lruCache.get(3);
+        Assert.assertEquals("352", lruCache.getKeyByOrderAsStr());
+        Assert.assertEquals(7, val);
+
+        lruCache.set(4, 6);
+        Assert.assertEquals("435", lruCache.getKeyByOrderAsStr());
+
+        val = lruCache.get(4);
+        Assert.assertEquals("435", lruCache.getKeyByOrderAsStr());
+        Assert.assertEquals(6, val);
     }
 }
