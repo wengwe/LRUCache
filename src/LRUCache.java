@@ -61,6 +61,17 @@ public class LRUCache {
         actualSize += 1;
     }
 
+    protected String getDoubleLinkListAsStr() {
+        StringBuffer sb = new StringBuffer();
+        DoubleLinkListNode node = LIST_HEAD.next;
+        while (node != null) {
+            sb.append(node.key);
+            node = node.next;
+        }
+        return sb.toString();
+    }
+
+
     private void moveNodeBehindHead(DoubleLinkListNode nodeToMove) {
         if (nodeToMove == currentListTail) currentListTail = nodeToMove.prev;
         nodeToMove.prev.next = nodeToMove.next;
