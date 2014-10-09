@@ -24,6 +24,10 @@ public class LRUCacheArrayMemory {
         nodeArray = new DoubleLinkListNode[capacity + 1];
         nodeArray[0] = new DoubleLinkListNode(-1, 1, -1, -1);
         LIST_TAIL_NODE_INDEX = 0;
+        //initialize memory at the beginning
+        for (int i = 1; i < capacity + 1; i++) {
+            nodeArray[i] = new DoubleLinkListNode(-1, -1, -1, -1);
+        }
 
     }
 
@@ -116,8 +120,11 @@ public class LRUCacheArrayMemory {
         node.nextNodeIndex = index;
         int prev = nodeIndex;
 
-        DoubleLinkListNode newNode = new DoubleLinkListNode(prev, next, key, val);
-        nodeArray[index] = newNode;
+        //DoubleLinkListNode newNode = new DoubleLinkListNode(prev, next, key, val);
+        nodeArray[index].prevNodeIndex = prev;
+        nodeArray[index].nextNodeIndex = next;
+        nodeArray[index].key = key;
+        nodeArray[index].val = val;
 
     }
 
