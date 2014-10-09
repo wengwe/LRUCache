@@ -49,6 +49,7 @@ public class LRUCacheArrayMemory {
                 removeNodeAt(nodeIndex);
                 insertNodeBehind(LIST_HEAD_NODE_INDEX, nodeIndex, key, value);
             }
+            nodeArray[nodeIndex].val = value;
             return;
         }
 

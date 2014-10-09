@@ -41,6 +41,19 @@ public class LRUCacheArrayMemoryTest {
 
 
     @Test
+    public void testCacheOverWriteKey() {
+        LRUCacheArrayMemory lruCache = new LRUCacheArrayMemory(2);
+        lruCache.set(2, 1);
+        Assert.assertEquals("2", lruCache.getKeyByOrderAsStr());
+
+        lruCache.set(2, 2);
+        int val = lruCache.get(2);
+        Assert.assertEquals(2, val);
+
+    }
+
+
+    @Test
     public void testCache() {
         LRUCacheArrayMemory lruCache = new LRUCacheArrayMemory(3);
         lruCache.set(1, 1);
