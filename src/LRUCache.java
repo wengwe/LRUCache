@@ -61,7 +61,7 @@ public class LRUCache {
         actualSize += 1;
     }
 
-    protected String getDoubleLinkListAsStr() {
+    protected String getKeyByOrderAsStr() {
         StringBuffer sb = new StringBuffer();
         DoubleLinkListNode node = LIST_HEAD.next;
         while (node != null) {
