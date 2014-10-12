@@ -4,8 +4,7 @@ import org.junit.Test;
 /**
  * User: Jason Weng
  */
-public class LRUCacheTest {
-
+public class LRUCacheArrayTest {
 
     @Test
     public void testCacheWithSize1() {
@@ -37,6 +36,19 @@ public class LRUCacheTest {
         Assert.assertEquals("3", lruCache.getKeyByOrderAsStr());
         Assert.assertEquals(3, val);
 
+
+    }
+
+
+    @Test
+    public void testCacheOverWriteKey() {
+        LRUCache lruCache = new LRUCache(2);
+        lruCache.set(2, 1);
+        Assert.assertEquals("2", lruCache.getKeyByOrderAsStr());
+
+        lruCache.set(2, 2);
+        int val = lruCache.get(2);
+        Assert.assertEquals(2, val);
 
     }
 
@@ -118,4 +130,5 @@ public class LRUCacheTest {
         Assert.assertEquals("4 3 5", lruCache.getKeyByOrderAsStr());
         Assert.assertEquals(6, val);
     }
+
 }
