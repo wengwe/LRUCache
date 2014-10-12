@@ -151,7 +151,7 @@ public class LRUCache {
     }
 
 
-    private class DoubleLinkListNode {
+    private static class DoubleLinkListNode {
         int prevNodeIndex;
         int nextNodeIndex;
         int key;
