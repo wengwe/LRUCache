@@ -1,11 +1,13 @@
 package util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * User: Jason Weng
  */
 public class ArrayDoubleLinkedList {
-
-    private int availablePosition;
 
     private final int capacity;
     private final Node[] nodeArray;
@@ -18,28 +20,54 @@ public class ArrayDoubleLinkedList {
     public ArrayDoubleLinkedList(int capacity) {
         this.capacity = capacity;
         this.nodeArray = new Node[capacity];
-    }
-
-    public void removeTailNode() {
-        removeNodeAt(LIST_TAIL_NODE_INDEX);
-        actualSize--;
+        actualSize = 0;
+        LIST_TAIL_NODE_INDEX = -1;
+        LIST_HEAD_NODE_INDEX = -1;
+        //initialize memory at the beginning
+        for (int i = 0; i < capacity; i++) {
+            nodeArray[i] = new Node(-1, -1, -1, -1);
+        }
 
     }
 
     public void moveNodeToHead(Node node) {
+        if (node.index == LIST_HEAD_NODE_INDEX) return;
         removeNodeAt(node.index);
+        insertNodeBehind(-1, node.index, node.getKey(), node.getVal());
     }
 
 
-    public void insertNodeAtFront(Node node) {
+    public Optional<Node> insertNodeAtFront(Node node) {
+        int pos;
+        Node nodeToRemove = null;
         if (actualSize == capacity) {
-            availablePosition = LIST_TAIL_NODE_INDEX;
+            pos = LIST_TAIL_NODE_INDEX;
+            nodeToRemove = new Node(nodeArray[LIST_TAIL_NODE_INDEX]);
+            removeNodeAt(LIST_TAIL_NODE_INDEX);
+            actualSize--;
         } else {
-            availablePosition = actualSize;
+            pos = actualSize;
         }
-        insertNodeBehind(-1, availablePosition, node.getKey(), node.getVal());
+        insertNodeBehind(-1, pos, node.getKey(), node.getVal());
+        //this change the parameters passed in.
+        node.index = pos;
         actualSize++;
+        return Optional.ofNullable(nodeToRemove);
     }
+
+    public List<Node> getCurrentNodeByOrder() {
+        List<Node> result = new ArrayList<Node>();
+        int nextIndex = LIST_HEAD_NODE_INDEX;
+        while (nextIndex != -1) {
+            Node node = nodeArray[nextIndex];
+            nextIndex = node.nextNodeIndex;
+            //defensive copy.
+            result.add(new Node(node));
+
+        }
+        return result;
+    }
+
 
     public static class Node {
         int prevNodeIndex;
@@ -60,13 +88,11 @@ public class ArrayDoubleLinkedList {
             this.val = val;
         }
 
-        public int getPrevNodeIndex() {
-            return prevNodeIndex;
+        public Node(Node node) {
+            this.key = node.key;
+            this.val = node.val;
         }
 
-        public int getNextNodeIndex() {
-            return nextNodeIndex;
-        }
 
         public int getKey() {
             return key;

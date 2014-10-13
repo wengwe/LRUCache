@@ -1,7 +1,9 @@
 import util.ArrayDoubleLinkedList;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static util.ArrayDoubleLinkedList.Node;
 
@@ -14,14 +16,13 @@ public class LRUCacheV2 {
     private final ArrayDoubleLinkedList arrayDoubleLinkedList;
 
     private final int capacity;
-    private int actualSize;
+    // private int actualSize;
 
 
     public LRUCacheV2(int capacity) {
         this.capacity = capacity;
-        actualSize = 0;
         keyMap = new HashMap<Integer, ArrayDoubleLinkedList.Node>();
-        arrayDoubleLinkedList = null;
+        arrayDoubleLinkedList = new ArrayDoubleLinkedList(capacity);
     }
 
 
@@ -43,15 +44,21 @@ public class LRUCacheV2 {
             return;
         }
 
-        if (actualSize == capacity) {
-            arrayDoubleLinkedList.removeTailNode();
-            actualSize--;
-        }
         Node node = new Node(key, value);
-        arrayDoubleLinkedList.insertNodeAtFront(node);
+        Optional<Node> nodeToRemove = arrayDoubleLinkedList.insertNodeAtFront(node);
+        if (nodeToRemove.isPresent()) keyMap.remove(nodeToRemove.get().getKey());
         keyMap.put(key, node);
-        actualSize++;
+
     }
 
+
+    protected String getKeyByOrderAsStr() {
+        List<Node> nodeList = arrayDoubleLinkedList.getCurrentNodeByOrder();
+        StringBuffer sb = new StringBuffer();
+        for (Node node : nodeList) {
+            sb.append(node.getKey()).append(" ");
+        }
+        return sb.toString().trim();
+    }
 
 }
