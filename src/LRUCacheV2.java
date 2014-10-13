@@ -15,12 +15,11 @@ public class LRUCacheV2 {
     private final Map<Integer, Node> keyMap;
     private final ArrayDoubleLinkedList arrayDoubleLinkedList;
 
-    private final int capacity;
+    // private final int capacity;
     // private int actualSize;
 
 
     public LRUCacheV2(int capacity) {
-        this.capacity = capacity;
         keyMap = new HashMap<Integer, ArrayDoubleLinkedList.Node>();
         arrayDoubleLinkedList = new ArrayDoubleLinkedList(capacity);
     }

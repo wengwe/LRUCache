@@ -36,7 +36,7 @@ public class ArrayDoubleLinkedList {
         insertNodeBehind(-1, node.index, node.getKey(), node.getVal());
     }
 
-
+    //return node that needs to removed if exceeding capacity.
     public Optional<Node> insertNodeAtFront(Node node) {
         int pos;
         Node nodeToRemove = null;
@@ -49,7 +49,8 @@ public class ArrayDoubleLinkedList {
             pos = actualSize;
         }
         insertNodeBehind(-1, pos, node.getKey(), node.getVal());
-        //this change the parameters passed in.
+        //this change the parameters passed in. The external keyMap hold same reference to this node is a little bit not safe. even though index can not be changed by API.
+        //But the thing is the node external map holds has to be consistent with nodeArray holds anyway.
         node.index = pos;
         actualSize++;
         return Optional.ofNullable(nodeToRemove);
