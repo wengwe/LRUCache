@@ -3,7 +3,6 @@ import util.ArrayDoubleLinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static util.ArrayDoubleLinkedList.Node;
 
@@ -15,11 +14,13 @@ public class LRUCacheV2 {
     private final Map<Integer, Node> keyMap;
     private final ArrayDoubleLinkedList arrayDoubleLinkedList;
 
-    // private final int capacity;
-    // private int actualSize;
+    private final int capacity;
+    private int actualSize;
 
 
     public LRUCacheV2(int capacity) {
+        this.actualSize = 0;
+        this.capacity = capacity;
         keyMap = new HashMap<Integer, ArrayDoubleLinkedList.Node>();
         arrayDoubleLinkedList = new ArrayDoubleLinkedList(capacity);
     }
@@ -28,8 +29,11 @@ public class LRUCacheV2 {
     public int get(int key) {
         if (keyMap.containsKey(key)) {
             Node node = keyMap.get(key);
-            arrayDoubleLinkedList.moveNodeToHead(node);
-            return node.getVal();
+            int val = node.getVal();
+            arrayDoubleLinkedList.removeNode(node);
+            Node newNode = arrayDoubleLinkedList.addNodeAtFront(key, val);
+            keyMap.put(key, newNode);
+            return val;
         } else return -1;
 
     }
@@ -38,16 +42,21 @@ public class LRUCacheV2 {
     public void set(int key, int value) {
         if (keyMap.containsKey(key)) {
             Node node = keyMap.get(key);
-            arrayDoubleLinkedList.moveNodeToHead(node);
-            node.setVal(value);
+            arrayDoubleLinkedList.removeNode(node);
+            Node newNode = arrayDoubleLinkedList.addNodeAtFront(key, value);
+            keyMap.put(key, newNode);
             return;
         }
 
-        Node node = new Node(key, value);
-        Optional<Node> nodeToRemove = arrayDoubleLinkedList.insertNodeAtFront(node);
-        if (nodeToRemove.isPresent()) keyMap.remove(nodeToRemove.get().getKey());
-        keyMap.put(key, node);
+        if (actualSize == capacity) {
+            int keyToRemove = arrayDoubleLinkedList.removeTail();
+            keyMap.remove(keyToRemove);
+            actualSize--;
+        }
 
+        Node node = arrayDoubleLinkedList.addNodeAtFront(key, value);
+        keyMap.put(key, node);
+        actualSize++;
     }
 
 

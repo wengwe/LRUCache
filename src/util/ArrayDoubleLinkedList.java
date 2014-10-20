@@ -1,8 +1,9 @@
 package util;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Queue;
 
 /**
  * User: Jason Weng
@@ -16,6 +17,8 @@ public class ArrayDoubleLinkedList {
     private int actualSize;
     private int LIST_TAIL_NODE_INDEX;
 
+    private Queue<Integer> availabe_position;
+
 
     public ArrayDoubleLinkedList(int capacity) {
         this.capacity = capacity;
@@ -23,40 +26,52 @@ public class ArrayDoubleLinkedList {
         actualSize = 0;
         LIST_TAIL_NODE_INDEX = -1;
         LIST_HEAD_NODE_INDEX = -1;
+        availabe_position = new ArrayDeque<Integer>();
         //initialize memory at the beginning
         for (int i = 0; i < capacity; i++) {
             nodeArray[i] = new Node(-1, -1, -1, -1);
+            availabe_position.add(i);
         }
 
     }
 
-    public void moveNodeToHead(Node node) {
-        if (node.index == LIST_HEAD_NODE_INDEX) return;
-        removeNodeAt(node.index);
-        insertNodeBehind(-1, node.index, node.getKey(), node.getVal());
+    public void removeNode(Node node) {
+        int index = node.index;
+        removeNodeAt(index);
+        availabe_position.add(index);
     }
 
-    //return node that needs to removed if exceeding capacity.
-    public Optional<Node> insertNodeAtFront(Node node) {
-        int pos;
-        Node nodeToRemove = null;
-        if (actualSize == capacity) {
-            pos = LIST_TAIL_NODE_INDEX;
-            nodeToRemove = new Node(nodeArray[LIST_TAIL_NODE_INDEX]);
-            removeNodeAt(LIST_TAIL_NODE_INDEX);
-            actualSize--;
-        } else {
-            pos = actualSize;
-        }
-        insertNodeBehind(-1, pos, node.getKey(), node.getVal());
-        //this change the parameters passed in. The external keyMap hold same reference to this node is a little bit not safe. even though index can not be changed by API.
-        //But the thing is the node external map holds has to be consistent with nodeArray holds anyway.
-        node.index = pos;
-        actualSize++;
-        return Optional.ofNullable(nodeToRemove);
+    public int removeTail() {
+        availabe_position.add(LIST_TAIL_NODE_INDEX);
+        //TODO  if no more position availabe ,shoule double size and copy over.
+        int key = nodeArray[LIST_TAIL_NODE_INDEX].key;
+        removeNodeAt(LIST_TAIL_NODE_INDEX);
+        return key;
     }
+
+    public Node addNodeAtFront(int key, int value) {
+        int index = availabe_position.poll();
+        insertNodeBehind(-1, index, key, value);
+        return nodeArray[index];
+
+    }
+
+    public Node addNodeAtEnd(int key, int value) {
+        int index = availabe_position.poll();
+        insertNodeBehind(LIST_TAIL_NODE_INDEX, index, key, value);
+        return nodeArray[index];
+    }
+
+    public Node addNodeBehind(Node node, int key, int value) {
+        int index = availabe_position.poll();
+
+        insertNodeBehind(node.index, index, key, value);
+        return nodeArray[index];
+    }
+
 
     public List<Node> getCurrentNodeByOrder() {
+        //TODO check out the iterator idea to transverse the list.
         List<Node> result = new ArrayList<Node>();
         int nextIndex = LIST_HEAD_NODE_INDEX;
         while (nextIndex != -1) {
