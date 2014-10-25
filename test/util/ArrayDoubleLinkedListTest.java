@@ -97,6 +97,19 @@ public class ArrayDoubleLinkedListTest {
 
     }
 
+    @Test
+    public void testDoubleLinkListSizeGrow() {
+        ArrayDoubleLinkedList arrayDoubleLinkedList = new ArrayDoubleLinkedList(2);
+
+        for (int i = 0; i < 10000; i++) {
+            arrayDoubleLinkedList.addNodeAtEnd(i, i);
+        }
+
+        int key = arrayDoubleLinkedList.removeTail();
+        Assert.assertEquals(9999, key);
+
+    }
+
 
     private boolean checkContentSame(List<Node> expectedList, List<Node> actualList) {
         int expSize = expectedList.size();

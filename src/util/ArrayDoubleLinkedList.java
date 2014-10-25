@@ -1,9 +1,6 @@
 package util;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * User: Jason Weng
@@ -11,19 +8,26 @@ import java.util.Queue;
 public class ArrayDoubleLinkedList {
 
     private final int capacity;
-    private final Node[] nodeArray;
+    private Node[] nodeArray;
 
     private int LIST_HEAD_NODE_INDEX;
-    private int actualSize;
+
     private int LIST_TAIL_NODE_INDEX;
 
     private Queue<Integer> availabe_position;
 
+    /**
+     * The maximum size of array to allocate.
+     * Some VMs reserve some header words in an array.
+     * Attempts to allocate larger arrays may result in
+     * OutOfMemoryError: Requested array size exceeds VM limit
+     */
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+
 
     public ArrayDoubleLinkedList(int capacity) {
-        this.capacity = capacity;
-        this.nodeArray = new Node[capacity];
-        actualSize = 0;
+        this.capacity = capacity > 2 ? capacity : 2;
+        this.nodeArray = new Node[this.capacity];
         LIST_TAIL_NODE_INDEX = -1;
         LIST_HEAD_NODE_INDEX = -1;
         availabe_position = new ArrayDeque<Integer>();
@@ -40,7 +44,7 @@ public class ArrayDoubleLinkedList {
         int index = node.index;
         if (availabe_position.contains(index)) return false;
         //one issue is that when the node get removed, its value might be updated already.see test case testDoubleLinkListRemoveNode.
-        //solution can be: add a defensive copy version when adding new Node. Check if content updated when remove. Overhead is new object created each time. Which makes the point of using array for efficiency pointless.
+        //solution can be: add a defensive copy version when adding new Node. Check if content updated when remove. Overhead is new object created each time. Which makes the point of using array for efficiency invalid.
         //this is not an issue for LRUCache bcz of old reference hold externally always get updated.
         //So for LRUCache problem, use a perfect standalone doubleLinkList is not efficient.
         removeNodeAt(index);
@@ -66,13 +70,13 @@ public class ArrayDoubleLinkedList {
     }
 
     public Node addNodeAtEnd(int key, int value) {
-        int index = availabe_position.poll();
+        int index = getAvailablePosition();
         insertNodeBehind(LIST_TAIL_NODE_INDEX, index, key, value);
         return nodeArray[index];
     }
 
     public Node insertNodeBehind(Node node, int key, int value) {
-        int index = availabe_position.poll();
+        int index = getAvailablePosition();
 
         insertNodeBehind(node.index, index, key, value);
         return nodeArray[index];
@@ -90,6 +94,32 @@ public class ArrayDoubleLinkedList {
 
         }
         return result;
+    }
+
+    private int getAvailablePosition() {
+        Integer index = availabe_position.poll();
+        if (index == null) {
+            grow();
+            return getAvailablePosition();
+        } else return index;
+    }
+
+    private void grow() {
+        // overflow-conscious code
+        int oldCapacity = nodeArray.length;
+        if (oldCapacity == MAX_ARRAY_SIZE) throw new OutOfMemoryError();
+
+        int newCapacity = oldCapacity + (oldCapacity >> 1);
+
+        if (newCapacity - MAX_ARRAY_SIZE > 0)
+            newCapacity = MAX_ARRAY_SIZE;
+
+        nodeArray = Arrays.copyOf(nodeArray, newCapacity);
+
+        for (int i = oldCapacity; i < newCapacity; i++) {
+            nodeArray[i] = new Node(-1, -1, -1, -1);
+            availabe_position.add(i);
+        }
     }
 
 
