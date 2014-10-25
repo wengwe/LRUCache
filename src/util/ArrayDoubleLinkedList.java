@@ -35,15 +35,24 @@ public class ArrayDoubleLinkedList {
 
     }
 
-    public void removeNode(Node node) {
+    public boolean removeNode(Node node) {
+        if (node == null) return false;
         int index = node.index;
+        if (availabe_position.contains(index)) return false;
+        //one issue is that when the node get removed, its value might be updated already.see test case testDoubleLinkListRemoveNode.
+        //solution can be: add a defensive copy version when adding new Node. Check if content updated when remove. Overhead is new object created each time. Which makes the point of using array for efficiency pointless.
+        //this is not an issue for LRUCache bcz of old reference hold externally always get updated.
+        //So for LRUCache problem, use a perfect standalone doubleLinkList is not efficient.
         removeNodeAt(index);
         availabe_position.add(index);
+        return true;
     }
 
     public int removeTail() {
+        if (LIST_TAIL_NODE_INDEX == -1) return -1;
         availabe_position.add(LIST_TAIL_NODE_INDEX);
         //TODO  if no more position availabe ,shoule double size and copy over.
+
         int key = nodeArray[LIST_TAIL_NODE_INDEX].key;
         removeNodeAt(LIST_TAIL_NODE_INDEX);
         return key;
@@ -62,7 +71,7 @@ public class ArrayDoubleLinkedList {
         return nodeArray[index];
     }
 
-    public Node addNodeBehind(Node node, int key, int value) {
+    public Node insertNodeBehind(Node node, int key, int value) {
         int index = availabe_position.poll();
 
         insertNodeBehind(node.index, index, key, value);
@@ -71,14 +80,13 @@ public class ArrayDoubleLinkedList {
 
 
     public List<Node> getCurrentNodeByOrder() {
-        //TODO check out the iterator idea to transverse the list.
         List<Node> result = new ArrayList<Node>();
         int nextIndex = LIST_HEAD_NODE_INDEX;
         while (nextIndex != -1) {
             Node node = nodeArray[nextIndex];
             nextIndex = node.nextNodeIndex;
             //defensive copy.
-            result.add(new Node(node));
+            result.add(new Node(node.key, node.val));
 
         }
         return result;
@@ -102,11 +110,6 @@ public class ArrayDoubleLinkedList {
         public Node(int key, int val) {
             this.key = key;
             this.val = val;
-        }
-
-        public Node(Node node) {
-            this.key = node.key;
-            this.val = node.val;
         }
 
 
