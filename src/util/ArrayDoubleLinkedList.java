@@ -55,7 +55,6 @@ public class ArrayDoubleLinkedList {
     public int removeTail() {
         if (LIST_TAIL_NODE_INDEX == -1) return -1;
         availabe_position.add(LIST_TAIL_NODE_INDEX);
-        //TODO  if no more position availabe ,shoule double size and copy over.
 
         int key = nodeArray[LIST_TAIL_NODE_INDEX].key;
         removeNodeAt(LIST_TAIL_NODE_INDEX);
@@ -63,7 +62,7 @@ public class ArrayDoubleLinkedList {
     }
 
     public Node addNodeAtFront(int key, int value) {
-        int index = availabe_position.poll();
+        int index = getAvailablePosition();
         insertNodeBehind(-1, index, key, value);
         return nodeArray[index];
 
