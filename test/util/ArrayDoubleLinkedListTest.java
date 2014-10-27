@@ -101,12 +101,15 @@ public class ArrayDoubleLinkedListTest {
     public void testDoubleLinkListSizeGrow() {
         ArrayDoubleLinkedList arrayDoubleLinkedList = new ArrayDoubleLinkedList(2);
 
+        Node node = arrayDoubleLinkedList.addNodeAtEnd(10000, 10000);
         for (int i = 0; i < 10000; i++) {
-            arrayDoubleLinkedList.addNodeAtEnd(i, i);
+            if (i % 3 == 0) arrayDoubleLinkedList.addNodeAtEnd(i, i);
+            if (i % 3 == 1) arrayDoubleLinkedList.addNodeAtFront(i, i);
+            if (i % 3 == 2) arrayDoubleLinkedList.insertNodeBehind(node, i, i);
         }
 
-        int key = arrayDoubleLinkedList.removeTail();
-        Assert.assertEquals(9999, key);
+        int size = arrayDoubleLinkedList.getSize();
+        Assert.assertEquals(10001, size);
 
     }
 

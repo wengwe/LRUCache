@@ -9,7 +9,7 @@ public class ArrayDoubleLinkedList {
 
     private final int capacity;
     private Node[] nodeArray;
-
+    private int size;
     private int LIST_HEAD_NODE_INDEX;
 
     private int LIST_TAIL_NODE_INDEX;
@@ -27,6 +27,7 @@ public class ArrayDoubleLinkedList {
 
     public ArrayDoubleLinkedList(int capacity) {
         this.capacity = capacity > 2 ? capacity : 2;
+        size = 0;
         this.nodeArray = new Node[this.capacity];
         LIST_TAIL_NODE_INDEX = -1;
         LIST_HEAD_NODE_INDEX = -1;
@@ -49,6 +50,7 @@ public class ArrayDoubleLinkedList {
         //So for LRUCache problem, use a perfect standalone doubleLinkList is not efficient.
         removeNodeAt(index);
         availabe_position.add(index);
+        size--;
         return true;
     }
 
@@ -58,12 +60,14 @@ public class ArrayDoubleLinkedList {
 
         int key = nodeArray[LIST_TAIL_NODE_INDEX].key;
         removeNodeAt(LIST_TAIL_NODE_INDEX);
+        size--;
         return key;
     }
 
     public Node addNodeAtFront(int key, int value) {
         int index = getAvailablePosition();
         insertNodeBehind(-1, index, key, value);
+        size++;
         return nodeArray[index];
 
     }
@@ -71,6 +75,7 @@ public class ArrayDoubleLinkedList {
     public Node addNodeAtEnd(int key, int value) {
         int index = getAvailablePosition();
         insertNodeBehind(LIST_TAIL_NODE_INDEX, index, key, value);
+        size++;
         return nodeArray[index];
     }
 
@@ -78,9 +83,13 @@ public class ArrayDoubleLinkedList {
         int index = getAvailablePosition();
 
         insertNodeBehind(node.index, index, key, value);
+        size++;
         return nodeArray[index];
     }
 
+    public int getSize() {
+        return size;
+    }
 
     public List<Node> getCurrentNodeByOrder() {
         List<Node> result = new ArrayList<Node>();
