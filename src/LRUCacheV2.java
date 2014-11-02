@@ -1,18 +1,20 @@
-import util.ArrayDoubleLinkedList;
+import util.ArrayDoubleLinkedListGeneric;
+import util.DoubleLinkedList;
+import util.KeyValPair;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static util.ArrayDoubleLinkedList.Node;
+import static util.DoubleLinkedList.Node;
 
 /**
  * User: Jason Weng
  */
 public class LRUCacheV2 {
 
-    private final Map<Integer, Node> keyMap;
-    private final ArrayDoubleLinkedList arrayDoubleLinkedList;
+    private final Map<Integer, DoubleLinkedList.Node<KeyValPair>> keyMap;
+    private final DoubleLinkedList<KeyValPair> arrayDoubleLinkedList;
 
     private final int capacity;
     private int actualSize;
@@ -21,19 +23,19 @@ public class LRUCacheV2 {
     public LRUCacheV2(int capacity) {
         this.actualSize = 0;
         this.capacity = capacity;
-        keyMap = new HashMap<Integer, ArrayDoubleLinkedList.Node>();
-        arrayDoubleLinkedList = new ArrayDoubleLinkedList(capacity);
+        keyMap = new HashMap<Integer, DoubleLinkedList.Node<KeyValPair>>();
+        arrayDoubleLinkedList = new ArrayDoubleLinkedListGeneric<KeyValPair>(capacity);
     }
 
 
     public int get(int key) {
         if (keyMap.containsKey(key)) {
-            Node node = keyMap.get(key);
-            int val = node.getVal();
+            Node<KeyValPair> node = keyMap.get(key);
+            KeyValPair keyValPair = node.getElement();
             arrayDoubleLinkedList.removeNode(node);
-            Node newNode = arrayDoubleLinkedList.addNodeAtFront(key, val);
+            Node<KeyValPair> newNode = arrayDoubleLinkedList.addNodeAtFront(keyValPair);
             keyMap.put(key, newNode);
-            return val;
+            return keyValPair.getVal();
         } else return -1;
 
     }
@@ -41,32 +43,33 @@ public class LRUCacheV2 {
 
     public void set(int key, int value) {
         if (keyMap.containsKey(key)) {
-            Node node = keyMap.get(key);
+            Node<KeyValPair> node = keyMap.get(key);
             arrayDoubleLinkedList.removeNode(node);
-            Node newNode = arrayDoubleLinkedList.addNodeAtFront(key, value);
+            Node<KeyValPair> newNode = arrayDoubleLinkedList.addNodeAtFront(new KeyValPair(key, value));
             keyMap.put(key, newNode);
             return;
         }
 
         if (actualSize == capacity) {
-            int keyToRemove = arrayDoubleLinkedList.removeTail();
+            int keyToRemove = arrayDoubleLinkedList.removeTail().getKey();
             keyMap.remove(keyToRemove);
             actualSize--;
         }
 
-        Node node = arrayDoubleLinkedList.addNodeAtFront(key, value);
+        Node<KeyValPair> node = arrayDoubleLinkedList.addNodeAtFront(new KeyValPair(key, value));
         keyMap.put(key, node);
         actualSize++;
     }
 
 
     protected String getKeyByOrderAsStr() {
-        List<Node> nodeList = arrayDoubleLinkedList.getCurrentNodeByOrder();
+        List<KeyValPair> keyValList = arrayDoubleLinkedList.getElementsByOrder();
         StringBuffer sb = new StringBuffer();
-        for (Node node : nodeList) {
-            sb.append(node.getKey()).append(" ");
+        for (KeyValPair keyValPair : keyValList) {
+            sb.append(keyValPair.getKey()).append(" ");
         }
         return sb.toString().trim();
     }
+
 
 }
